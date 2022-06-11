@@ -8,6 +8,8 @@ defmodule Ecommerce.Catalog.Product do
     field :views, :integer, default: 0
     field :description, :string
 
+    many_to_many :categories, Category, join_through: "products_categories", on_replace: :delete
+
     timestamps()
   end
 
