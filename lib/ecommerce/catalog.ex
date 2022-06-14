@@ -5,11 +5,10 @@ defmodule Ecommerce.Catalog do
 
   import Ecto.Query, warn: false
   alias Ecommerce.Repo
-
   alias Ecommerce.Catalog.Product
 
   @doc """
-  Returns the list of products.
+  Returns the of products.
 
   ## Examples
 
@@ -36,10 +35,9 @@ defmodule Ecommerce.Catalog do
 
   """
   def get_product!(id) do
-   Product
-   |> Repo.get!(id)
-   |> Repo.preload(:categories)
-    
+    Product
+    |> Repo.get(id)
+    |> Repo.preload(:categories)
   end
 
   @doc """
@@ -104,20 +102,18 @@ defmodule Ecommerce.Catalog do
 
   """
   def change_product(%Product{} = product, attrs \\ %{}) do
-    category = list_categories_by_id(attrs["category_ids"])
+    categories = list_categories_by_id(attrs["category_ids"])
 
     product
-    |> repo.preload(:categories)
+    |> Repo.preload(:categories)
     |> Product.changeset(attrs)
-    |> Ecto.Changese.put_assoc(:categories, categories)
+    |> Ecto.Changeset.put_assoc(:categories, categories)
   end
 
   def inc_product_views(%Product{} = product) do
-    {1, [%Product{views: views}]} = 
-      from(p in Product, where: p.id == ^product.id, select: [:views])
-      |> Repo.update_all(inc: [views: 1])
-
-    put_in(product.views, views)
+    {:ok, viewed_product} = __MODULE__.update_product(product, %{views: product.views + 1})
+    
+    viewed_product
   end
 
   alias Ecommerce.Catalog.Category

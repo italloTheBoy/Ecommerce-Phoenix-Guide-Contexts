@@ -31,7 +31,7 @@ defmodule EcommerceWeb.ProductController do
       id
       |> Catalog.get_product!()
       |> Catalog.inc_product_views()
-
+    
     render(conn, "show.html", product: product)
   end
 
