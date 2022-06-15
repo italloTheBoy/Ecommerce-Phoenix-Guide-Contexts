@@ -111,7 +111,9 @@ defmodule Ecommerce.Catalog do
   end
 
   def inc_product_views(%Product{} = product) do
-    {:ok, viewed_product} = __MODULE__.update_product(product, %{views: product.views + 1})
+    {:ok, viewed_product} = 
+      product
+      |> __MODULE__.update_product(%{views: product.views + 1})
     
     viewed_product
   end

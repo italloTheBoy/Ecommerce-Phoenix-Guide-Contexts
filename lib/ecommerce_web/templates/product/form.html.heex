@@ -13,8 +13,6 @@
   <%= number_input f, :price, step: "any" %>
   <%= error_tag f, :price %>
 
-  <%= category_select f, @changeset %>
-
   <%= label f, :description %>
   <%= text_input f, :description %>
   <%= error_tag f, :description %>
@@ -23,6 +21,7 @@
   <%= number_input f, :views %>
   <%= error_tag f, :views %>
 
+  <%= category_select f, @changeset %>
 
   <div>
     <%= submit "Save" %>

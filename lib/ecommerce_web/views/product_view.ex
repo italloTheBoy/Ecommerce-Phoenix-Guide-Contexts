@@ -1,5 +1,6 @@
 defmodule EcommerceWeb.ProductView do
   use EcommerceWeb, :view
+  alias Ecommerce.Catalog
 
   def category_select(f, changeset) do
     existing_ids = 
@@ -8,13 +9,15 @@ defmodule EcommerceWeb.ProductView do
       |> Enum.map(& &1.data.id)
 
     category_opts =
-      for category <- Hello.Catalog.list_categories(), 
-        do: [
-              key: category.title, 
-              value: category.id, 
-              selected: category.id in existing_ids
-            ]
+      for category <- Catalog.list_categories() do
+        [
+          key: category.title, 
+          value: category.id, 
+          selected: category.id in existing_ids
+        ]
+      end
 
     multiple_select(f, :category_ids ,category_opts)
+
   end
 end
