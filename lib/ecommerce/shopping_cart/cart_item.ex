@@ -9,7 +9,7 @@ defmodule Ecommerce.ShoppingCart.CartItem do
     field :price_when_carted, :decimal
     field :quantity, :integer
 
-    belongs_to :cart,    Cart
+    belongs_to :cart, Cart
     belongs_to :product, Product 
 
     timestamps()
