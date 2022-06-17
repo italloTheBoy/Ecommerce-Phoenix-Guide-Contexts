@@ -2,6 +2,7 @@ defmodule EcommerceWeb.CartItemController do
   use EcommerceWeb, :controller
   alias Ecommerce.{ShoppingCart, Catalog}
 
+
   def create(conn, %{"product_id" => product_id}) do 
     product = Catalog.get_product!(product_id)
     
@@ -31,4 +32,5 @@ defmodule EcommerceWeb.CartItemController do
         |> redirect(to: Routes.cart_path(conn, :show))
     end 
   end
+  
 end

@@ -52,7 +52,7 @@ defmodule Ecommerce.ShoppingCart do
   """
   def create_cart(user_uuid) do
     %Cart{user_uuid: user_uuid}
-    |> CartItem.changeset(%{})
+    |> Cart.changeset(%{})
     |> Repo.insert()
     |> case do
       {:ok, cart} -> {:ok, reload_cart(cart)}   
@@ -222,7 +222,6 @@ defmodule Ecommerce.ShoppingCart do
     |> put_assoc(:product, product)
     |> Repo.insert(
       on_conflict: [inc: [quantity: 1]],
-      conflict_target: [:cart_id, :product_id]
     )
   end
 
