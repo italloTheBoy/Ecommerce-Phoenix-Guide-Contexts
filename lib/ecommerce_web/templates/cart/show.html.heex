@@ -3,7 +3,7 @@
 <%= if @cart.items == [] do %>
   <p>Your cart is empty</p>
 <% else %>
-  <% form_for @changeset, Routes.cart_path(@conn, :update), fn f -> %>
+  <%= form_for @changeset, Routes.cart_path(@conn, :update), fn f -> %>
     <ul>
       <%= for item_form <- inputs_for(f, :items), item = item_form.data do %>
         <li>
@@ -15,7 +15,7 @@
       <% end %>
     </ul>
 
-    <%= submit "Update cart" %>
+    <%= submit "update cart" %>
   <% end %>
   
   <b>Total</b>: <%= currency_to_str(ShoppingCart.total_cart_price(@cart)) %>

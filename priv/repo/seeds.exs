@@ -9,10 +9,3 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
-
-id = 2
-
-res 
-  id
-  |> Catalog.get_product!()
-  |> Catalog.inc_product_views()

@@ -47,10 +47,9 @@ defmodule EcommerceWeb.Router do
     resources "/products", ProductController
   
     get "/cart", CartController, :show
-    put "/cart", CartController, :update
+    patch "/cart", CartController, :update
 
     resources "/cart/items", CartItemController, only: [:create, :delete]
-    # post "/cart/items/:product_id", CartItemController, :create
   end
 
   # Other scopes may use custom stacks.

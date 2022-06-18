@@ -221,7 +221,7 @@ defmodule Ecommerce.ShoppingCart do
     |> put_assoc(:cart, cart)
     |> put_assoc(:product, product)
     |> Repo.insert(
-      on_conflict: [inc: [quantity: 1]],
+      on_conflict: [inc: [quantity: 1]]
     )
   end
 
@@ -235,6 +235,18 @@ defmodule Ecommerce.ShoppingCart do
       {:ok, _deleted_cart_item} -> {:ok, reload_cart(cart)}
       {:error, changeset} -> {:error, changeset}
     end
+  end
+
+  def total_item_price(%CartItem{} = item) do
+    Decimal.mult(item.product.price, item.quantity)
+  end
+
+  def total_cart_price(%Cart{} = cart) do
+    Enum.reduce(cart.items, 0, fn item, cart_price ->
+      item
+      |> total_item_price()
+      |> Decimal.add(cart_price)
+    end)
   end
 
   defp reload_cart(%Cart{} = cart), do: get_cart_by_user_uuid(cart.user_uuid)
