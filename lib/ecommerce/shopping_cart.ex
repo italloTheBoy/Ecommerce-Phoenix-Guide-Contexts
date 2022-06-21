@@ -5,6 +5,7 @@ defmodule Ecommerce.ShoppingCart do
 
   import Ecto.Query, warn: false
   import Ecto.Changeset
+  alias Ecto.Multi
   alias Ecommerce.Repo
   alias Ecommerce.Catalog.Product
   alias Ecommerce.ShoppingCart.{Cart, CartItem}
@@ -73,9 +74,25 @@ defmodule Ecommerce.ShoppingCart do
 
   """
   def update_cart(%Cart{} = cart, attrs) do
-    cart
-    |> Cart.changeset(attrs)
-    |> Repo.update()
+    # cart
+    # |> Cart.changeset(attrs)
+    # |> Repo.update()
+
+    changeset = 
+      cart
+      |> Cart.changeset(attrs)
+      |> cast_assoc(:items, with: &CartItem.changeset/2)
+
+    Multi.new()
+    |> Multi.update(:cart, changeset)
+    |> Multi.delete_all(:discarded_items, fn %{cart: cart} ->
+      from(i in CartItem, where: i.cart_id == ^cart.id and i.quantity == 0) 
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{cart: cart}} -> {:ok, cart}   
+      {:error, :cart, changeset, _changes_so_far} -> {:error, changeset}   
+    end
   end
 
   @doc """
