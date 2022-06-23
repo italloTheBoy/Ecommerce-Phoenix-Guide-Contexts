@@ -50,6 +50,8 @@ defmodule EcommerceWeb.Router do
     put "/cart", CartController, :update
 
     resources "/cart/items", CartItemController, only: [:create, :delete]
+  
+    resources "/order", OrderController, only: [:create, :show]
   end
 
   # Other scopes may use custom stacks.
