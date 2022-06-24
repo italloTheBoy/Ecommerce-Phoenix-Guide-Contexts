@@ -4,9 +4,11 @@ defmodule Ecommerce.Orders do
   """
 
   import Ecto.Query, warn: false
+  alias Ecto.Multi
   alias Ecommerce.Repo
-
-  alias Ecommerce.Orders.Order
+  alias Ecommerce.Orders.{Order, LineItem}
+  alias Ecommerce.ShoppingCart
+  alias Ecommerce.ShoppingCart.{Cart, CartItem}
 
   @doc """
   Returns the list of orders.
@@ -35,7 +37,12 @@ defmodule Ecommerce.Orders do
       ** (Ecto.NoResultsError)
 
   """
-  def get_order!(id), do: Repo.get!(Order, id)
+  
+  def get_order!(id, user_uuid) do
+    Order
+    |> Repo.get_by!(id: id, user_uuid: user_uuid)
+    |> Repo.preload([line_items: [:product]])
+  end
 
   @doc """
   Creates a order.
@@ -102,7 +109,34 @@ defmodule Ecommerce.Orders do
     Order.changeset(order, attrs)
   end
 
-  alias Ecommerce.Orders.LineItem
+  def complete_order(%Cart{} = cart) do
+    line_items =
+      Enum.map(cart.items, fn item ->
+        %{
+          product_id: item.product_id,
+          price: item.product.price,
+          quantity: item.quantity 
+        }
+      end)
+
+    order = 
+      Order.changeset(%Order{}, 
+        user_uuid: cart.user_uuid,
+        line_items: line_items,
+        total_price: ShoppingCart.total_cart_price(cart)
+      )
+
+    Multi.new()
+    |> Multi.insert(:order, order)
+    |> Multi.run(:prune_cart, fn _repo, _changes -> 
+      ShoppingCart.prune_cart_items(cart)
+    end)
+    |> Repo.transaction
+    |> case do
+      {:ok, %{order: order}} -> {:ok, order}
+      {:error, name, value, _changes_so_far} -> {:error, {name, value}}
+    end
+  end
 
   @doc """
   Returns the list of order_line_items.

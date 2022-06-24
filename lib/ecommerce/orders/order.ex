@@ -4,8 +4,8 @@ defmodule Ecommerce.Orders.Order do
   alias Ecommerce.Orders.LineItem
 
   schema "orders" do
-    field :total_price, :decimal
     field :user_uuid, Ecto.UUID
+    field :total_price, :decimal
 
     has_many :line_items, LineItem
     has_many :products, through: [:line_items, :product]

@@ -14,15 +14,17 @@ defmodule EcommerceWeb.OrderController do
     render(conn, "new.html", changeset: changeset)
   end
 
-  def create(conn, %{"order" => order_params}) do
-    case Orders.create_order(order_params) do
+  def create(conn, _params) do
+    case Orders.complete_order(conn.assigns.cart) do
       {:ok, order} ->
         conn
         |> put_flash(:info, "Order created successfully.")
         |> redirect(to: Routes.order_path(conn, :show, order))
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
+      {:error, _cause} ->
+        conn
+        |> put_flash(:error, "There are an error processing your order.")
+        |> redirect(to: Routes.cart_path(conn, :show))
     end
   end
 

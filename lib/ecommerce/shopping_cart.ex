@@ -266,5 +266,13 @@ defmodule Ecommerce.ShoppingCart do
     end)
   end
 
+  def prune_cart_items(%Cart{} = cart) do
+    {_, _} =
+      from(i in CartItem, where: i.cart_id == ^cart.id)
+      |> Repo.delete_all()
+
+    {:ok, reload_cart(cart)}
+  end
+
   defp reload_cart(%Cart{} = cart), do: get_cart_by_user_uuid(cart.user_uuid)
 end
