@@ -29,7 +29,8 @@ defmodule EcommerceWeb.OrderController do
   end
 
   def show(conn, %{"id" => id}) do
-    order = Orders.get_order!(id)
+    order = Orders.get_order!(conn.assigns.current_uuid, id)
+
     render(conn, "show.html", order: order)
   end
 
